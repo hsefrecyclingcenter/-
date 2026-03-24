@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>주소 검색 | 화성시재활용센터</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 60px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 14px;
+      width: 100%;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #2ea44f;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #278a42;
+    }
+
+    input {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    .copy-btn {
+      margin-top: 10px;
+      background: #0366d6;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>주소 검색</h1>
+  <p>정확한 도로명 주소를 검색하세요</p>
+
+  <button class="btn" onclick="execDaumPostcode()">주소 검색하기</button>
+
+  <input type="text" id="address" placeholder="검색 결과가 여기에 표시됩니다" readonly>
+
+  <button class="btn copy-btn" onclick="copyAddress()">주소 복사</button>
+
+  <div class="footer">
+    © 화성시재활용센터
+  </div>
+</div>
+
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+<script>
+function execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            document.getElementById("address").value = data.address;
+        }
+    }).open();
+}
+
+function copyAddress() {
+    const address = document.getElementById("address").value;
+
+    if (!address) {
+        alert("먼저 주소를 검색해주세요.");
+        return;
+    }
+
+    navigator.clipboard.writeText(address).then(() => {
+        alert("주소가 복사되었습니다!");
+    });
+}
+</script>
+
+</body>
+</html>
