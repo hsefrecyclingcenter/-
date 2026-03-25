@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>주소 검색</title>
+<title>주소 입력</title>
 
 <style>
   body {
@@ -11,7 +11,6 @@
     margin: 0; padding: 20px;
     background: #f7f9fc;
   }
-
   .container {
     max-width: 480px;
     margin: 0 auto;
@@ -21,9 +20,7 @@
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     text-align: center;
   }
-
   h2 { margin-bottom: 16px; font-size: 22px; }
-
   .btn {
     width: 100%;
     padding: 14px;
@@ -35,7 +32,6 @@
     font-size: 16px;
     cursor: pointer;
   }
-
   input {
     width: 100%;
     padding: 12px;
@@ -44,7 +40,6 @@
     border-radius: 8px;
     font-size: 15px;
   }
-
   .footer {
     margin-top: 20px;
     color: #aaa;
@@ -63,16 +58,16 @@
   <input id="address" placeholder="기본주소" readonly />
   <input id="detailAddress" placeholder="상세주소를 입력하세요" />
 
-  <button class="btn" style="background:#0069d9" onclick="sendToGoogleForm()">구글폼으로 보내기</button>
+  <button class="btn" style="background:#0069d9" onclick="autoSubmit()">자동 제출하기</button>
 
-  <div class="footer">© 화성시재활용센터 </div>
+  <div class="footer">© ㅇㅇㅇ</div>
 </div>
 
 <!-- Daum Postcode API -->
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-// 주소 검색(카카오)
+// 주소 검색
 function execDaumPostcode() {
     new daum.Postcode({
         oncomplete: function(data) {
@@ -80,32 +75,26 @@ function execDaumPostcode() {
             let addr = "";
             let extra = "";
 
-            // 도로명 / 지번 주소 구분
             if (data.userSelectedType === "R") {
                 addr = data.roadAddress;
-
-                // 동, 건물명 등 추가 정보
                 if (data.bname && /[동|로|가]$/g.test(data.bname)) extra += data.bname;
                 if (data.buildingName && data.apartment === "Y")
                     extra += (extra ? ", " : "") + data.buildingName;
-
                 if (extra) addr += " (" + extra + ")";
             } else {
                 addr = data.jibunAddress;
             }
 
-            // 입력칸 자동 채우기
             document.getElementById("postcode").value = data.zonecode;
             document.getElementById("address").value = addr;
 
-            // 상세주소 입력칸으로 포커스 이동
             document.getElementById("detailAddress").focus();
         }
     }).open();
 }
 
-// 구글폼 자동 전달
-function sendToGoogleForm() {
+// 구글폼 자동 제출 기능
+function autoSubmit() {
 
     const postcode = document.getElementById("postcode").value;
     const addr = document.getElementById("address").value;
@@ -118,13 +107,43 @@ function sendToGoogleForm() {
 
     const fullAddress = "(" + postcode + ") " + addr + " " + detail;
 
-    // 구글폼 Entry 번호 = 31860817
-    const sendUrl =
-"https://docs.google.com/forms/d/e/1FAIpQLSf8mCi04LJ-OnCdvOWCEQmpHg1Sgm-MUt4w6roU9v1N2GBoag/viewform?usp=pp_url"
-+ "&entry.31860817=" + encodeURIComponent(fullAddress);
+    // 1) 숨겨진 폼 생성
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action =
+      "https://docs.google.com/forms/d/e/1FAIpQLSf8mCi04LJ-OnCdvOWCEQmpHg1Sgm-MUt4w6roU9v1N2GBoag/formResponse";
 
-    // 구글폼 열기
-    window.location.href = sendUrl;
+    const hiddenField = document.createElement("input");
+    hiddenField.type = "hidden";
+    hiddenField.name = "entry.31860817";
+    hiddenField.value = fullAddress;
+
+    form.appendChild(hiddenField);
+    document.body.appendChild(form);
+
+    // 2) 자동 제출
+    form.submit();
+
+    // 3) 제출 후 사용자 안내 페이지로 이동(사용자가 조작할 수 있도록 1초 지연)
+    setTimeout(function() {
+        window.location.href = "data:text/html;charset=utf-8," +
+            encodeURIComponent(`
+                <html>
+                <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <title>제출 완료</title>
+                </head>
+                <body style="font-family:Arial; text-align:center; padding:40px;">
+                    <h2>제출이 완료되었습니다.</h2>
+                    <p>창이 자동으로 닫히지 않으면, 아래 버튼을 눌러 닫아주세요.</p>
+                    <button onclick="window.close()" 
+                        style="padding:12px 18px; margin-top:18px; border:none; background:#0069d9; color:#fff; border-radius:6px; font-size:16px;">
+                        창 닫기
+                    </button>
+                </body>
+                </html>
+            `);
+    }, 1000);
 }
 </script>
 
