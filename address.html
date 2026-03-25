@@ -93,7 +93,7 @@ function execDaumPostcode() {
     }).open();
 }
 
-// 구글폼 자동 제출 기능
+// 구글폼 자동 제출
 function autoSubmit() {
 
     const postcode = document.getElementById("postcode").value;
@@ -107,7 +107,7 @@ function autoSubmit() {
 
     const fullAddress = "(" + postcode + ") " + addr + " " + detail;
 
-    // 1) 숨겨진 폼 생성
+    // 숨겨진 폼 생성 (자동 제출)
     const form = document.createElement("form");
     form.method = "POST";
     form.action =
@@ -121,10 +121,10 @@ function autoSubmit() {
     form.appendChild(hiddenField);
     document.body.appendChild(form);
 
-    // 2) 자동 제출
+    // 제출
     form.submit();
 
-    // 3) 제출 후 사용자 안내 페이지로 이동(사용자가 조작할 수 있도록 1초 지연)
+    // 제출 후 안내 페이지로 이동
     setTimeout(function() {
         window.location.href = "data:text/html;charset=utf-8," +
             encodeURIComponent(`
@@ -135,7 +135,7 @@ function autoSubmit() {
                 </head>
                 <body style="font-family:Arial; text-align:center; padding:40px;">
                     <h2>제출이 완료되었습니다.</h2>
-                    <p>창이 자동으로 닫히지 않으면, 아래 버튼을 눌러 닫아주세요.</p>
+                    <p>창이 자동으로 닫히지 않으면 아래 버튼을 눌러 닫아주세요.</p>
                     <button onclick="window.close()" 
                         style="padding:12px 18px; margin-top:18px; border:none; background:#0069d9; color:#fff; border-radius:6px; font-size:16px;">
                         창 닫기
