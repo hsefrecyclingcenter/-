@@ -70,7 +70,9 @@
 </head>
 
 <body>
-<div class="container">
+
+<!-- 기존 입력 화면 -->
+<div class="container" id="mainContainer">
   <h2>주소 검색하기</h2>
 
   <button class="btn" onclick="execDaumPostcode()">주소 검색</button>
@@ -79,17 +81,38 @@
   <input id="address" placeholder="기본주소" readonly />
   <input id="detailAddress" placeholder="상세주소를 입력하세요" />
 
-  <!-- 버튼명 완전히 변경 -->
+  <!-- 버튼명 변경 -->
   <button class="copy-btn" onclick="copyAddress()">주소 복사하기</button>
 
-  <!-- 안내 박스 -->
   <div class="guide" id="guideText">
       주소가 복사되었습니다!<br>
       작성 중이던 <b>구글폼 탭으로 돌아가</b><br>
       주소 입력란(내 답변)에 <b>Ctrl + V</b> 또는 <b>붙여넣기</b> 해주세요.
   </div>
 
-  <div class="footer">© 화성시재활용센터</div>
+  <div class="footer">© 6666666</div> 
+</div>
+
+<!-- 🔥 복사 후 표시될 종료 화면 -->
+<div id="finishScreen" style="
+  display:none;
+  padding:40px;
+  text-align:center;
+  max-width:480px;
+  margin:0 auto;
+">
+  <div style="
+    font-size:64px;
+    color:#28a745;
+    margin-bottom:20px;
+  ">
+    ✔
+  </div>
+  <h2 style="font-size:22px; margin-bottom:10px;">주소 복사 완료</h2>
+  <p style="font-size:16px; color:#444; line-height:1.6;">
+    이제 <b>작성 중이던 구글폼 탭으로 돌아가</b><br>
+    주소 입력란에 <b>Ctrl + V</b> 또는 <b>붙여넣기</b> 해주세요.
+  </p>
 </div>
 
 <!-- Daum 주소 API -->
@@ -97,7 +120,7 @@
 
 <script>
 
-// 캐시 방지 (강제 새로고침)
+// 캐시 방지
 if (performance.navigation.type === 1) {
     console.log("Page reloaded.");
 }
@@ -127,6 +150,8 @@ function execDaumPostcode() {
     }).open();
 }
 
+
+// 🔥 복사하기 → 종료 화면 흐름
 function copyAddress() {
 
     const postcode = document.getElementById("postcode").value;
@@ -142,13 +167,33 @@ function copyAddress() {
 
     navigator.clipboard.writeText(fullAddress)
       .then(() => {
-        document.getElementById("guideText").style.display = "block";
-        alert("주소가 복사되었습니다!\n이 창을 닫고 구글폼으로 돌아가 붙여 넣기 해주세요.");
+
+        alert("주소가 복사되었습니다!\n이제 구글폼으로 돌아갑니다.");
+
+        // 🔥 창 닫기 시도
+        window.open('', '_self');
+        window.close();
+
+        // 🔥 닫기 실패 시 종료 화면 활성화
+        setTimeout(() => {
+            if (!document.hidden) {
+                showFinishScreen();
+            }
+        }, 300);
+
       })
       .catch(() => {
         alert("복사에 실패했습니다. 브라우저 설정을 확인해주세요.");
       });
 }
+
+
+// 🔥 종료 화면 활성화 함수
+function showFinishScreen() {
+    document.getElementById('mainContainer').style.display = "none";
+    document.getElementById('finishScreen').style.display = "block";
+}
+
 </script>
 
 </body>
